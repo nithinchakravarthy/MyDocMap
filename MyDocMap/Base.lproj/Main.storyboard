@@ -140,7 +140,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="alphabet"/>
                                 <connections>
-                                    <action selector="doctorType:" destination="hHm-XH-oPL" eventType="editingDidEnd" id="mjj-NA-CMe"/>
+                                    <action selector="doctorType:" destination="hHm-XH-oPL" eventType="editingDidEnd" id="ngS-Oz-xL3"/>
                                 </connections>
                             </textField>
                         </subviews>

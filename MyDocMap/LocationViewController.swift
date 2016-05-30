@@ -12,17 +12,17 @@ import CoreLocation
 
 class LocationViewController: UIViewController,CLLocationManagerDelegate, MKMapViewDelegate, UISearchBarDelegate, UITextFieldDelegate {
     
-    var docType:String = ""
     @IBOutlet weak var searchType: UITextField!
+    
     @IBAction func doctorType(sender: UITextField) {
         var docType = sender.text!
     }
-    
     
     @IBOutlet weak var currentAddress: UILabel!
     
     @IBOutlet weak var currentMap: MKMapView!
     
+    var docType:String = ""
     var selectedPin:MKPlacemark? = nil
     var geoCoder: CLGeocoder!
     var locationManager: CLLocationManager!
@@ -41,6 +41,7 @@ class LocationViewController: UIViewController,CLLocationManagerDelegate, MKMapV
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //Location Updates initialize
         locationManager = CLLocationManager()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.delegate = self
@@ -56,16 +57,18 @@ class LocationViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         // Dispose of any resources that can be recreated.
     }
     
-    
+    //Function to recenter to current location if Map View is moved
     @IBAction func refreshLocation(sender: UIButton) {
         viewDidLoad()
     }
     
+    //Remove keyboard on pressing return
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
     }
     
+    //Function to update current location
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location: CLLocation = locations.first!
         self.currentMap.centerCoordinate = location.coordinate
@@ -78,6 +81,7 @@ class LocationViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         let initialLocation = CLLocation(latitude: latitude, longitude: longitude)
         let request = MKLocalSearchRequest()
         let doctorSearchType = docType
+        //Default search is Hospital
         if(doctorSearchType == ""){
             request.naturalLanguageQuery = "Hospital"
         }
@@ -90,14 +94,16 @@ class LocationViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         search.startWithCompletionHandler({(response: MKLocalSearchResponse?, error: NSError?) in
         for item in response!.mapItems {
             print(item.name)
+            //Call to drop pins at search locations
             self.addPinToMapView(item.name!, latitude: item.placemark.location!.coordinate.latitude, longitude: item.placemark.location!.coordinate.longitude)
          }
          })
-         //locationManager.stopUpdatingLocation()
+         locationManager.stopUpdatingLocation()
          let coordinateRegion = MKCoordinateRegionMakeWithDistance(initialLocation.coordinate, searchRadius * 3.0, searchRadius * 3.0)
          currentMap.setRegion(coordinateRegion, animated: true)
     }
 
+    //Annotation function for mapView
     func addPinToMapView(title: String, latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
         let location = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         let anotation = MKPointAnnotation()
@@ -107,7 +113,7 @@ class LocationViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         currentMap.addAnnotation(anotation)
     }
     
-    
+    //Function for change in region of map
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         let location = CLLocation(latitude: mapView.centerCoordinate.latitude, longitude: mapView.centerCoordinate.longitude)
         geoCode(location)
@@ -118,7 +124,7 @@ class LocationViewController: UIViewController,CLLocationManagerDelegate, MKMapV
         print(error)
     }
     
-    
+    //Function for reverse geocoding, i.e converting from co-ordinates to human readable address
     func geoCode(location : CLLocation!){
         geoCoder.cancelGeocode()
         geoCoder.reverseGeocodeLocation(location, completionHandler: { (data, error) -> Void in
