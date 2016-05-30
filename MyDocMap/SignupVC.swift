@@ -14,7 +14,6 @@ class SignupVC: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var txtPassword: UITextField!
     @IBOutlet weak var txtConfPass: UITextField!
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.txtUsername.delegate = self
@@ -28,6 +27,7 @@ class SignupVC: UIViewController, UITextFieldDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    //Function to remove keyboard once return is pressed.
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
@@ -39,6 +39,7 @@ class SignupVC: UIViewController, UITextFieldDelegate {
         let confirm_password:NSString = txtConfPass.text!
         
         if ( username.isEqualToString("") || password.isEqualToString("") ) {
+            //Alert Controller for Improper Logins. Conforms to iOS 9 and Swift 2.
             let alertController = UIAlertController(title: "Sign Up Failed!", message: "Enter Username and Password", preferredStyle: UIAlertControllerStyle.Alert)
             
             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
@@ -61,11 +62,12 @@ class SignupVC: UIViewController, UITextFieldDelegate {
         }
         else {
             do {
-                
+                //SignUP request from app to server
                 let post:NSString = "username=\(username)&password=\(password)&c_password=\(confirm_password)"
                 
                 NSLog("PostData: %@",post);
                 
+                //Used another person's php page as my server wasn't supporting requests
                 let url:NSURL = NSURL(string: "https://dipinkrishna.com/jsonsignup.php")!
                 
                 let postData:NSData = post.dataUsingEncoding(NSASCIIStringEncoding)!
@@ -102,22 +104,22 @@ class SignupVC: UIViewController, UITextFieldDelegate {
                         
                         NSLog("Response ==> %@", responseData);
                         
-                        //var error: NSError?
-                        
                         let jsonData:NSDictionary = try NSJSONSerialization.JSONObjectWithData(urlData!, options:NSJSONReadingOptions.MutableContainers ) as! NSDictionary
                         
                         
                         let success:NSInteger = jsonData.valueForKey("success") as! NSInteger
                         
-                        //[jsonData[@"success"] integerValue];
                         
                         NSLog("Success: %ld", success);
                         
+                        //if username and passwords match
                         if(success == 1)
                         {
                             NSLog("Sign Up SUCCESS");
                             self.dismissViewControllerAnimated(true, completion: nil)
-                        } else {
+                        }
+                            //If Sign Up fails, various messages
+                        else {
                             var error_msg:NSString
                             
                             if jsonData["error_message"] as? NSString != nil {
@@ -133,48 +135,42 @@ class SignupVC: UIViewController, UITextFieldDelegate {
                             
                             alertController.addAction(okAction)
                             self.presentViewController(alertController, animated: true, completion: nil)
-                            
                         }
-                        
-                    } else {
+                    }
+                    else {
                         let alertController = UIAlertController(title: "Sign Up Failed!", message: "Connection Failed", preferredStyle: UIAlertControllerStyle.Alert)
                         
                         let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
                             print("OK")
                         }
-                        
                         alertController.addAction(okAction)
                         self.presentViewController(alertController, animated: true, completion: nil)
-
                     }
-                }  else {
+                }
+                else {
                     let alertController = UIAlertController(title: "Sign Up Failed!", message: "Connection Failure", preferredStyle: UIAlertControllerStyle.Alert)
                     
                     let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
                         print("OK")
                     }
-                    
                     alertController.addAction(okAction)
                     self.presentViewController(alertController, animated: true, completion: nil)
-
                 }
-            } catch {
+            }
+            catch {
                 let alertController = UIAlertController(title: "Sign Up Failed!", message: "Server Failed", preferredStyle: UIAlertControllerStyle.Alert)
                 
                 let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
                     print("OK")
                 }
-                
                 alertController.addAction(okAction)
                 self.presentViewController(alertController, animated: true, completion: nil)
-
             }
         }
-        }
+    }
  
-    
+    //If Signup is not necessary.
     @IBAction func loginTapped(sender: UIButton) {
         self.dismissViewControllerAnimated(true, completion: nil)
-    
         }
 }

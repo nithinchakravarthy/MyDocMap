@@ -22,9 +22,9 @@ class ViewController: UIViewController {
     }
 
     override func viewDidAppear(animated: Bool) {
-        //self.performSegueWithIdentifier("goto_login", sender: self)
         super.viewDidAppear(true)
         
+        //Check if user is logged in to proceed, else perform segue to Login Screen
         let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
         let isLoggedIn:Int = prefs.integerForKey("ISLOGGEDIN") as Int
         if (isLoggedIn != 1) {
@@ -35,10 +35,9 @@ class ViewController: UIViewController {
     }
     
     @IBAction func logoutTapped(sender: UIButton) {
-      //  self.performSegueWithIdentifier("goto_login", sender: self)
         let appDomain = NSBundle.mainBundle().bundleIdentifier
         NSUserDefaults.standardUserDefaults().removePersistentDomainForName(appDomain!)
-        
+        //Move to Login Screen on Logout
         self.performSegueWithIdentifier("goto_login", sender: self)
     }
 

@@ -25,6 +25,7 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    //Function to remove keyboard once return is pressed.
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
@@ -36,8 +37,9 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         
         if ( username.isEqualToString("") || password.isEqualToString("") ) {
             
+            //Alert Controller for Improper Logins. Conforms to iOS 9 and Swift 2.
             let alertController = UIAlertController(title: "Sign In Failed!", message: "Enter Username and Password", preferredStyle: UIAlertControllerStyle.Alert)
-            
+            //Only an OK button will be displayed. No destructive action.
             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
                 print("OK")
             }
@@ -47,10 +49,12 @@ class LoginVC: UIViewController, UITextFieldDelegate {
         } else {
             
             do {
+                //Login Checks from stored values in server
                 let post:NSString = "username=\(username)&password=\(password)"
                 
                 NSLog("PostData: %@",post);
                 
+                //Used another person's php page as my server wasn't supporting requests
                 let url:NSURL = NSURL(string:"https://dipinkrishna.com/jsonlogin2.php")!
                 
                 let postData:NSData = post.dataUsingEncoding(NSASCIIStringEncoding)!
@@ -87,14 +91,9 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                         
                         NSLog("Response ==> %@", responseData);
                         
-                        //var error: NSError?
-                        
                         let jsonData:NSDictionary = try NSJSONSerialization.JSONObjectWithData(urlData!, options:NSJSONReadingOptions.MutableContainers ) as! NSDictionary
                         
-                        
                         let success:NSInteger = jsonData.valueForKey("success") as! NSInteger
-                        
-                        //[jsonData[@"success"] integerValue];
                         
                         NSLog("Success: %ld", success);
                         
@@ -107,10 +106,12 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                             prefs.setInteger(1, forKey: "ISLOGGEDIN")
                             prefs.synchronize()
                             
+                            //if username and password matches
                             self.dismissViewControllerAnimated(true, completion: nil)
-                        } else {
+                        }
+                            //If Sign In fails, various messages
+                        else {
                             var error_msg:NSString
-                            
                             if jsonData["error_message"] as? NSString != nil {
                                 error_msg = jsonData["error_message"] as! NSString
                             } else {
@@ -121,13 +122,11 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
                                 print("OK")
                             }
-                            
                             alertController.addAction(okAction)
                             self.presentViewController(alertController, animated: true, completion: nil)
-                            
                         }
-                        
-                    } else {
+                    }
+                    else {
                         let alertController = UIAlertController(title: "Sign In Failed!", message: "Connection Failed", preferredStyle: UIAlertControllerStyle.Alert)
                         
                         let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
@@ -136,7 +135,8 @@ class LoginVC: UIViewController, UITextFieldDelegate {
                         alertController.addAction(okAction)
                         self.presentViewController(alertController, animated: true, completion: nil)
                     }
-                } else {
+                }
+                else {
                     let alertController = UIAlertController(title: "Sign In Failed!", message: "Connection Failure", preferredStyle: UIAlertControllerStyle.Alert)
                     
                     let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (result : UIAlertAction) -> Void in
